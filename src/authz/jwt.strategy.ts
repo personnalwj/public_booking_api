@@ -11,10 +11,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 5,
-        jwksUri: `http://private-keycloak:8080/realms/local_jw/protocol/openid-connect/certs`,
+        jwksUri: `${process.env.JKWS_URI}`,
       }),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      issuer: 'http://public-booking.keycloak.local:8080/realms/local_jw',
+      issuer: `${process.env.ISSUER}`,
       algorithms: ['RS256'],
     });
   }
