@@ -18,15 +18,23 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "mikro:create": "mikro-orm --config dist/mikro-orm.config.js migration:create",
+    "mikro:up": "mikro-orm --config dist/mikro-orm.config.js migration:up",
+    "mikro:down": "mikro-orm --config dist/mikro-orm.config.js migration:down"
   },
   "dependencies": {
+    "@mikro-orm/core": "^6.1.2",
+    "@mikro-orm/migrations": "^6.1.2",
+    "@mikro-orm/nestjs": "^5.2.3",
+    "@mikro-orm/postgresql": "^6.1.2",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^3.2.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^9.0.0",
+    "dotenv": "^16.4.3",
     "express-session": "^1.18.0",
     "jwks-rsa": "^3.1.0",
     "keycloak-connect": "^23.0.6",
@@ -39,6 +47,7 @@
     "rxjs": "^7.2.0"
   },
   "devDependencies": {
+    "@mikro-orm/cli": "^6.1.2",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",

@@ -10,7 +10,6 @@ import {
 import { SpotsService } from './spots.service';
 import { CreateSpotDto } from './dto/create-spot.dto';
 import { UpdateSpotDto } from './dto/update-spot.dto';
-import { Roles, Unprotected } from 'nest-keycloak-connect';
 
 @Controller('spots')
 export class SpotsController {
@@ -22,13 +21,11 @@ export class SpotsController {
   }
 
   @Get()
-  @Unprotected()
   findAll() {
     return this.spotsService.findAll();
   }
 
   @Get(':id')
-  @Roles({ roles: ['admin'] })
   findOne(@Param('id') id: string) {
     return this.spotsService.findOne(+id);
   }

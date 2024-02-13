@@ -3,6 +3,14 @@ FROM node:18-alpine as development
 
 WORKDIR /home/node/back
 
+RUN deluser --remove-home node \
+  && addgroup -S node \
+  && adduser -S -G node -u 999 node
+
+RUN chown -R node:node ./
+
+USER node
+
 COPY package.json ./
 
 RUN yarn install --only=development
