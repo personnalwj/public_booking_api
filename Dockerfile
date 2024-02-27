@@ -1,37 +1,79 @@
-# Use the official Node.js 18 Alpine image as the base image
 FROM node:18-alpine as development
+# add the missing shared libraries from alpine base image
+RUN apk add --no-cache libc6-compat
+# Create app folder
+WORKDIR /home/node/app
 
-WORKDIR /home/node/back
+# Set to dev environment
+ENV NODE_ENV dev
 
+# Create non-root user for Docker
 RUN deluser --remove-home node \
-  && addgroup -S node \
-  && adduser -S -G node -u 999 node
+  && addgroup --system --gid 1001 node \
+  && adduser --system --uid 1001 node
 
-RUN chown -R node:node ./
+# Copy source code into app folder
+COPY --chown=node:node . .
 
-USER node
-
-COPY package.json ./
-
+# Install dependencies
 RUN yarn install --only=development
 
-COPY . .
+# Set Docker as a non-root user
+USER node
 
+#
+# 🏡 Production Build
+#
+FROM node:18-alpine as build
+
+WORKDIR /home/node/app
+RUN apk add --no-cache libc6-compat
+
+# Set to production environment
+ENV NODE_ENV production
+
+# Re-create non-root user for Docker
+RUN deluser --remove-home node \
+  && addgroup --system --gid 1001 node \
+  && adduser --system --uid 1001 node
+
+# In order to run `yarn build` we need access to the Nest CLI.
+# Nest CLI is a dev dependency.
+COPY --chown=node:node --from=development /home/node/app/node_modules ./node_modules
+# Copy source code
+COPY --chown=node:node . .
+
+# Generate the production build. The build script runs "nest build" to compile the application.
 RUN yarn build
 
-FROM node:18-alpine as production
+# Install only the production dependencies and clean cache to optimize image size.
+RUN yarn --pure-lockfile --production && yarn cache clean
 
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
+# Set Docker as a non-root user
+USER node
 
-WORKDIR /home/node/back
+#
+# 🚀 Production Server
+#
+FROM node:18-alpine as prod
 
-COPY package.json ./
+WORKDIR /home/node/app
+RUN apk add --no-cache libc6-compat
 
-RUN yarn install --only=production
+# Set to production environment
+ENV NODE_ENV production
 
-COPY . .
+# Re-create non-root user for Docker
+RUN deluser --remove-home node \
+  && addgroup --system --gid 1001 node \
+  && adduser --system --uid 1001 node
 
-COPY --from=development /home/node/back/dist ./dist
+# Copy only the necessary files
+COPY --chown=node:node --from=build /home/node/app/dist dist
+COPY --chown=node:node --from=build /home/node/app/node_modules node_modules
 
-CMD ["node", "dist/main"]
+# Set Docker as non-root user
+USER node
+
+
+CMD ["node", "dist/src/main.js"]

@@ -1,5 +1,6 @@
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { Migrator, TSMigrationGenerator } from '@mikro-orm/migrations';
+import { SeedManager } from '@mikro-orm/seeder';
 
 export default {
   entities: ['./dist/**/entities/*.entity.js'],
@@ -11,7 +12,7 @@ export default {
   host: process.env.DATABASE_HOST,
   port: +process.env.DATABASE_PORT,
   debug: process.env.NODE_ENV === 'development',
-  extensions: [Migrator],
+  extensions: [Migrator, SeedManager],
   migrations: {
     tableName: 'mikro_orm_migrations', // name of database table with log of executed transactions
     path: './dist/src/database/migrations', // path to the folder with migrations
@@ -25,5 +26,13 @@ export default {
     snapshot: true, // save snapshot when creating new migrations
     emit: 'ts' as const, // migration generation mode
     generator: TSMigrationGenerator, // migration generator, e.g. to allow custom formatting
+  },
+  seeder: {
+    path: './dist/src/database/seeders',
+    pathTs: './src/database/seeders',
+    defaultSeeder: 'DatabaseSeeder',
+    glob: '!(*.d).{js,ts}',
+    emit: 'ts' as const,
+    fileName: (className: string) => className,
   },
 };

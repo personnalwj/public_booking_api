@@ -1,4 +1,5 @@
 import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import crypto from 'crypto';
 
 @Entity({ abstract: true })
 export abstract class CustomBaseEntity {
