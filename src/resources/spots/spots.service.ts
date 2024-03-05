@@ -1,15 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSpotDto } from './dto/create-spot.dto';
 import { UpdateSpotDto } from './dto/update-spot.dto';
+import { EntityRepository } from '@mikro-orm/postgresql';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { Spot } from './entities/spot.entity';
 
 @Injectable()
 export class SpotsService {
+  constructor(
+    @InjectRepository(Spot)
+    private readonly spotRepository: EntityRepository<Spot>,
+  ) {}
   create(createSpotDto: CreateSpotDto) {
     return 'This action adds a new spot';
   }
 
   findAll() {
-    return `This action returns all spots`;
+    return this.spotRepository.findAll({
+      populate: ['timeSlots'],
+      limit: 10,
+    });
   }
 
   findOne(id: number) {

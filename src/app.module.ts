@@ -8,6 +8,7 @@ import { SpotsModule } from './resources/spots/spots.module';
 import { UsersModule } from './resources/users/users.module';
 import { BookingsModule } from './resources/bookings/bookings.module';
 import { TimeSlotsModule } from './resources/time-slots/time-slots.module';
+import { CongregationsModule } from './resources/congregations/congregations.module';
 import mikroOrmConfig from './../mikro-orm.config';
 
 @Module({
@@ -18,6 +19,7 @@ import mikroOrmConfig from './../mikro-orm.config';
     UsersModule,
     BookingsModule,
     TimeSlotsModule,
+    CongregationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
