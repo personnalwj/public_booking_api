@@ -15,7 +15,7 @@ COPY package.json ./
 
 RUN yarn install --only=development
 
-COPY . .
+COPY --chown=node:node . .
 
 RUN yarn build
 
@@ -30,8 +30,8 @@ COPY package.json ./
 
 RUN yarn install --only=production
 
-COPY . .
+COPY --chown=node:node . .
 
-COPY --from=development /home/node/back/dist ./dist
+COPY --from=development --chown=node:node /home/node/back/dist ./dist
 
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main"]
