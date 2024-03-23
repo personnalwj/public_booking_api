@@ -10,6 +10,7 @@ import { BookingsModule } from './resources/bookings/bookings.module';
 import { TimeSlotsModule } from './resources/time-slots/time-slots.module';
 import { CongregationsModule } from './resources/congregations/congregations.module';
 import mikroOrmConfig from './../mikro-orm.config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -20,6 +21,18 @@ import mikroOrmConfig from './../mikro-orm.config';
     BookingsModule,
     TimeSlotsModule,
     CongregationsModule,
+    AuthModule.forRoot({
+      connectionURI:
+        process.env.SUPERTOKENS_CONNECTION_URI || 'https://try.supertokens.com',
+      appInfo: {
+        appName: process.env.SUPERTOKENS_APPNAME || 'local',
+        apiDomain:
+          process.env.SUPERTOKENS_API_DOMAIN || 'http://localhost:3000',
+        websiteDomain:
+          process.env.SUPERTOKENS_WEBSITE_DOMAIN || 'http://localhost:3000',
+        apiBasePath: process.env.SUPERTOKENS_API_BASEPATH || '/back-api',
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
