@@ -1,6 +1,5 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
-import { User } from './decorators/user.decorator';
 import { KeycloakGuard } from './authz/keycloak.guard';
 
 @Controller()
