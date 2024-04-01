@@ -1,7 +1,8 @@
+import { config } from 'dotenv';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { Migrator, TSMigrationGenerator } from '@mikro-orm/migrations';
 import { SeedManager } from '@mikro-orm/seeder';
-
+config();
 export default {
   entities: ['./dist/**/entities/*.entity.js'],
   entitiesTs: ['./src/**/entities/*'],
