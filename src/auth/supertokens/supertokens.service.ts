@@ -8,7 +8,6 @@ import UserMeradata from 'supertokens-node/recipe/usermetadata';
 import jwt from 'supertokens-node/recipe/jwt';
 
 import { ConfigInjectionToken, AuthModuleConfig } from '../config.interface';
-import { use } from 'passport';
 
 @Injectable()
 export class SupertokensService {
@@ -22,49 +21,9 @@ export class SupertokensService {
       },
       recipeList: [
         Dashboard.init(),
-        EmailPassword.init({
-          override: {
-            apis: (originalImplementation) => {
-              return {
-                ...originalImplementation,
-                signInPOST: async (input) => {
-                  const response = await originalImplementation.signInPOST(
-                    input,
-                  );
-                  if (response.status === 'OK') {
-                    const { metadata } = await UserMeradata.getUserMetadata(
-                      response.user.id,
-                    );
-                    input.options.res.sendJSONResponse({
-                      user: { ...response.user, ...metadata },
-                    });
-                  }
-                  return response;
-                },
-              };
-            },
-          },
-        }),
+        EmailPassword.init(),
         Session.init({
-          override: {
-            functions: (originalImplementation) => {
-              return {
-                ...originalImplementation,
-                createNewSession: async (input) => {
-                  const response =
-                    await originalImplementation.createNewSession(input);
-                  const { metadata } = await UserMeradata.getUserMetadata(
-                    input.userId,
-                  );
-                  input.accessTokenPayload = {
-                    ...input.accessTokenPayload,
-                    ...metadata,
-                  };
-                  return response;
-                },
-              };
-            },
-          },
+          exposeAccessTokenToFrontendInCookieBasedAuth: true,
         }),
         UserRoles.init(),
         UserMeradata.init(),
