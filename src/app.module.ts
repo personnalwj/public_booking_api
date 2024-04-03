@@ -14,7 +14,6 @@ import supertokensConfig from 'supertokens.config';
 
 @Module({
   imports: [
-    // AuthzModule,
     ConfigModule.forRoot(),
     MikroOrmModule.forRoot(mikroOrmConfig),
     SpotsModule,

@@ -18,8 +18,7 @@ COPY --chown=node:node . .
 # Install dependencies
 RUN yarn install --only=development
 
-# Set Docker as a non-root user
-USER node
+COPY --chown=node:node . .
 
 #
 # 🏡 Production Build
@@ -63,17 +62,8 @@ RUN apk add --no-cache libc6-compat
 # Set to production environment
 ENV NODE_ENV production
 
-# Re-create non-root user for Docker
-RUN deluser --remove-home node \
-  && addgroup --system --gid 1001 node \
-  && adduser --system --uid 1001 node
+COPY --chown=node:node . .
 
-# Copy only the necessary files
-COPY --chown=node:node --from=build /home/node/app/dist dist
-COPY --chown=node:node --from=build /home/node/app/node_modules node_modules
+COPY --from=development --chown=node:node /home/node/back/dist ./dist
 
-# Set Docker as non-root user
-USER node
-
-
-CMD ["node", "dist/src/main.js"]
+CMD ["node", "dist/src/main"]
