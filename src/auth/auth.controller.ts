@@ -1,4 +1,4 @@
-import { Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuthGuard } from './auth.guard';
 import { Session } from './session/session.decorator';
 import { SessionContainer } from 'supertokens-node/recipe/session';
@@ -20,5 +20,4 @@ export class AuthController {
       ...user,
     };
   }
-
 }
