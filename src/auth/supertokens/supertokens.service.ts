@@ -21,7 +21,16 @@ export class SupertokensService {
       },
       recipeList: [
         Dashboard.init(),
-        EmailPassword.init(),
+        EmailPassword.init({
+          override: {
+            apis: (originalImplementation) => {
+              return {
+                ...originalImplementation,
+                signUpPOST: undefined,
+              };
+            },
+          },
+        }),
         Session.init({
           exposeAccessTokenToFrontendInCookieBasedAuth: true,
         }),
