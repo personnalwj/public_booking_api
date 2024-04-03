@@ -9,7 +9,9 @@ async function bootstrap() {
   app.setGlobalPrefix('back-api');
   app.enableCors({
     origin: [
-      process.env.FRONTEND_DOMAIN || process.env.SUPERTOKENS_WEBSITE_DOMAIN,
+      process.env.FRONTEND_DOMAIN,
+      process.env.SUPERTOKENS_WEBSITE_DOMAIN,
+      'http://localhost:3003',
     ],
     allowedHeaders: ['content-type', ...supertokens.getAllCORSHeaders()],
     credentials: true,

@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from './auth.guard';
 import { Session } from './session/session.decorator';
 import { SessionContainer } from 'supertokens-node/recipe/session';
@@ -9,7 +9,7 @@ import { IUserMetadata } from './../helpers/types';
 @Controller('auth')
 export class AuthController {
   @Get('/profile')
-  @UseGuards(new AuthGuard())
+  @UseGuards(new AuthGuard({ checkDatabase: true }))
   async getProfile(
     @Session() session: SessionContainer,
   ): Promise<IUserMetadata & User> {
@@ -20,4 +20,5 @@ export class AuthController {
       ...user,
     };
   }
+
 }
