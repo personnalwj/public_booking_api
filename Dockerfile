@@ -44,7 +44,7 @@ COPY --chown=node:node . .
 RUN yarn build
 
 # Install only the production dependencies and clean cache to optimize image size.
-RUN yarn --pure-lockfile --production && yarn cache clean
+RUN yarn --frozen-lockfile --production && yarn cache clean
 
 # Set Docker as a non-root user
 USER node
@@ -54,14 +54,16 @@ USER node
 #
 FROM node:18-alpine as prod
 
-WORKDIR /home/node/app
-RUN apk add --no-cache libc6-compat
+# WORKDIR /home/node/app
+# RUN apk add --no-cache libc6-compat
 
-# Set to production environment
-ENV NODE_ENV production
+# # Set to production environment
+# ENV NODE_ENV production
 
+COPY --chown=node:node --from=build /home/node/app/dist ./dist
 COPY --chown=node:node --from=build /home/node/app/node_modules ./node_modules
 
-COPY  --chown=node:node --from=build /home/node/app/dist ./dist
+# Set Docker as a non-root user
+USER node
 
 CMD ["node", "dist/src/main"]
