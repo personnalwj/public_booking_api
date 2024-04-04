@@ -18,8 +18,6 @@ COPY --chown=node:node . .
 # Install dependencies
 RUN yarn install --only=development
 
-COPY --chown=node:node . .
-
 #
 # 🏡 Production Build
 #
@@ -64,6 +62,6 @@ ENV NODE_ENV production
 
 COPY --chown=node:node . .
 
-COPY --from=development --chown=node:node /home/node/back/dist ./dist
+COPY --from=build --chown=node:node /home/node/app/dist ./dist
 
 CMD ["node", "dist/src/main"]
