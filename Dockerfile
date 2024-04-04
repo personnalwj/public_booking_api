@@ -16,7 +16,7 @@ RUN deluser --remove-home node \
 COPY --chown=node:node . .
 
 # Install dependencies
-RUN yarn --frozen-lockfile
+RUN yarn --pure-lockfile
 
 #
 # 🏡 Production Build
@@ -44,7 +44,7 @@ COPY --chown=node:node . .
 RUN yarn build
 
 # Install only the production dependencies and clean cache to optimize image size.
-RUN yarn --frozen-lockfile --production && yarn cache clean
+RUN yarn --pure-lockfile --production && yarn cache clean
 
 # Set Docker as a non-root user
 USER node
