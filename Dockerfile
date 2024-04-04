@@ -62,6 +62,6 @@ ENV NODE_ENV production
 
 COPY --chown=node:node . .
 
-COPY --from=build --chown=node:node /home/node/app/dist ./dist
+COPY --from=development --chown=node:node /home/node/app/dist ./dist
 
 CMD ["node", "dist/src/main"]
