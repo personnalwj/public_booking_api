@@ -33,11 +33,11 @@ on:
 env:
   ECR_REPOSITORY: pb-api           # set this to your Amazon ECR repository name
   ECS_SERVICE:  api             # set this to your Amazon ECS service name
-  ECS_CLUSTER: api-gateway-fargate-ClusterStack-1WZ2I898V2IZI-ECSCluster-yboM4hEzYgFk  # set this to your Amazon ECS cluster name
+  ECS_CLUSTER: apigw-supertokens-nest-next-ClusterStack-1O98EANJGJ82U-ECSCluster-uaKTLd4BMjJZ  # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION: .aws/task-definition.json # set this to the path to your Amazon ECS task definition
                                                # file, e.g. .aws/task-definition.json
   CONTAINER_NAME: api         # set this to the name of the container in the
-                                               # containerDefinitions section of your task definition
+  MIGRATION_CONTAINER_NAME: api-migration                             # containerDefinitions section of your task definition
 
 permissions:
   contents: read
@@ -84,10 +84,18 @@ jobs:
         container-name: ${{ vars.MY_CONTAINER_NAME }}
         image: ${{ steps.build-image.outputs.image }}
 
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def-migration
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        container-name: ${{ env.MIGRATION_CONTAINER_NAME }}
+        image: ${{ steps.build-image.outputs.image }}
+  
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
-        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        task-definition: ${{ steps.task-def-migration.outputs.task-definition }}
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true
