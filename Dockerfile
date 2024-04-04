@@ -60,8 +60,8 @@ RUN apk add --no-cache libc6-compat
 # Set to production environment
 ENV NODE_ENV production
 
-COPY --chown=node:node . .
+COPY --chown=node:node --from=build /home/node/app/node_modules ./node_modules
 
-COPY --from=development --chown=node:node /home/node/app/dist ./dist
+COPY  --chown=node:node --from=build /home/node/app/dist ./dist
 
 CMD ["node", "dist/src/main"]
