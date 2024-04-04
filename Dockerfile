@@ -16,7 +16,7 @@ RUN deluser --remove-home node \
 COPY --chown=node:node . .
 
 # Install dependencies
-RUN yarn install --only=development
+RUN yarn --frozen-lockfile
 
 #
 # 🏡 Production Build
