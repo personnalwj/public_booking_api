@@ -37,3 +37,4 @@ lerna-debug.log*
 .history
 .env
 .aws/api.env
+.yarn
