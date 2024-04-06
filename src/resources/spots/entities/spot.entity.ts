@@ -2,6 +2,7 @@ import {
   Collection,
   Entity,
   ManyToMany,
+  ManyToOne,
   Property,
   TextType,
 } from '@mikro-orm/core';
@@ -21,4 +22,7 @@ export class Spot extends CustomBaseEntity {
 
   @ManyToMany({ entity: () => TimeSlot, owner: true })
   timeSlots = new Collection<TimeSlot>(this);
+
+  @ManyToOne('Congregation')
+  congregation!: string;
 }
