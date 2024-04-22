@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { CreateSpotDto } from './dto/create-spot.dto';
 import { UpdateSpotDto } from './dto/update-spot.dto';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Spot } from './entities/spot.entity';
+import { UUID } from 'crypto';
 
 @Injectable()
 export class SpotsService {
@@ -22,8 +23,13 @@ export class SpotsService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} spot`;
+  findOne(id: UUID) {
+    try {
+      return this.spotRepository.findOneOrFail(id);
+    } catch (error) {
+      Logger.error(error);
+      throw new HttpException('Spot not found', 404);
+    }
   }
 
   update(id: number, updateSpotDto: UpdateSpotDto) {

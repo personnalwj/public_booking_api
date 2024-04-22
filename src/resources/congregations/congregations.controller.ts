@@ -10,6 +10,7 @@ import {
 import { CongregationsService } from './congregations.service';
 import { CreateCongregationDto } from './dto/create-congregation.dto';
 import { UpdateCongregationDto } from './dto/update-congregation.dto';
+import { UUID } from 'crypto';
 
 @Controller('congregations')
 export class CongregationsController {
@@ -26,8 +27,8 @@ export class CongregationsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.congregationsService.findOne(+id);
+  findOne(@Param('id') id: UUID) {
+    return this.congregationsService.findOne(id);
   }
 
   @Patch(':id')
