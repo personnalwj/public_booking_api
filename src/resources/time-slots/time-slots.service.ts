@@ -9,7 +9,7 @@ export class TimeSlotsService {
   }
 
   findAll() {
-    return `This action returns all timeSlots`;
+    return `This action returns all timeSlots`; 
   }
 
   findOne(id: number) {

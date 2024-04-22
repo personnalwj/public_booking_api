@@ -7,6 +7,7 @@ import {
   TextType,
 } from '@mikro-orm/core';
 import { CustomBaseEntity } from 'src/helpers/base.entity';
+import { Congregation } from 'src/resources/congregations/entities/congregation.entity';
 import { TimeSlot } from 'src/resources/time-slots/entities/time-slot.entity';
 
 @Entity()
@@ -24,5 +25,5 @@ export class Spot extends CustomBaseEntity {
   timeSlots = new Collection<TimeSlot>(this);
 
   @ManyToOne('Congregation')
-  congregation!: string;
+  congregation!: Congregation;
 }
