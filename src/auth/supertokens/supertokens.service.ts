@@ -13,7 +13,6 @@ import { ConfigInjectionToken, AuthModuleConfig } from '../config.interface';
 export class SupertokensService {
   constructor(@Inject(ConfigInjectionToken) private config: AuthModuleConfig) {
     supertokens.init({
-      debug: true,
       appInfo: config.appInfo,
       supertokens: {
         connectionURI: config.connectionURI,

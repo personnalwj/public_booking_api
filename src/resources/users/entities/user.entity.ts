@@ -7,6 +7,9 @@ export class User extends CustomBaseEntity {
   @Property({ unique: true })
   sub: string;
 
+  @Property({ unique: true })
+  email: string;
+
   @ManyToOne('Congregation')
   congregation!: Congregation;
 }

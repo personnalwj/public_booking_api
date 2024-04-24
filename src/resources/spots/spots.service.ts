@@ -1,4 +1,9 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { CreateSpotDto } from './dto/create-spot.dto';
 import { UpdateSpotDto } from './dto/update-spot.dto';
 import { EntityRepository } from '@mikro-orm/postgresql';
@@ -8,18 +13,27 @@ import { UUID } from 'crypto';
 
 @Injectable()
 export class SpotsService {
+  private readonly logger = new Logger(SpotsService.name);
   constructor(
     @InjectRepository(Spot)
     private readonly spotRepository: EntityRepository<Spot>,
   ) {}
   create(createSpotDto: CreateSpotDto) {
-    return 'This action adds a new spot';
+    try {
+      this.spotRepository.create(createSpotDto);
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException({
+        ...error,
+        code: 500,
+        message: 'Internal server error',
+      });
+    }
   }
 
   findAll() {
     return this.spotRepository.findAll({
       populate: ['timeSlots'],
-      limit: 10,
     });
   }
 
