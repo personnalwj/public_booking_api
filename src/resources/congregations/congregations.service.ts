@@ -37,14 +37,10 @@ export class CongregationsService {
       congregation.responsible = createdUser;
       this.em.persist(congregation);
       await this.em.flush();
-      this.logger.log(
-        JSON.stringify(congregation),
-        'user created congregation',
-      );
       return congregation;
     } catch (error) {
       this.logger.error(error);
-      throw new InternalServerErrorException();
+      throw error;
     }
   }
 
@@ -68,17 +64,23 @@ export class CongregationsService {
     }
   }
 
-  update(id: number, updateCongregationDto: UpdateCongregationDto) {
-    return `This action updates a #${id} congregation`;
+  async update(id: UUID, updateCongregationDto: UpdateCongregationDto) {
+    try {
+      await this.congregationRepository.findOneOrFail(id);
+      const congregation = await this.congregationRepository.upsert(
+        updateCongregationDto,
+      );
+      await this.em.flush();
+      return congregation;
+    } catch (error) {
+      this.logger.error(error);
+      throw new ConflictException({
+        message: 'Could not update congregation',
+      });
+    }
   }
 
   remove(id: number) {
     return `This action removes a #${id} congregation`;
   }
-
-  // isResponsible(responsibleId: string) {
-  //   return this.congregationRepository.findOne({
-  //     responsible: responsibleId,
-  //   });
-  // }
 }

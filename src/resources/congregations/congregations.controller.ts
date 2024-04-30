@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  HttpException,
+  Logger,
 } from '@nestjs/common';
 import { CongregationsService } from './congregations.service';
 import { CreateCongregationDto } from './dto/create-congregation.dto';
@@ -17,11 +19,12 @@ import { SessionClaimValidator } from 'supertokens-node/recipe/session';
 import UserRoles from 'supertokens-node/recipe/userroles';
 import { User } from 'src/decorators/user.decorator';
 import { IUser } from 'src/helpers/types';
-import { IsNotResponsible } from '../users/guards/is-not-responsible.guard';
+import { th } from '@faker-js/faker';
 
 @Controller('congregations')
 export class CongregationsController {
   constructor(private readonly congregationsService: CongregationsService) {}
+  private readonly logger = new Logger(CongregationsController.name);
 
   @Post()
   @UseGuards(
@@ -31,16 +34,34 @@ export class CongregationsController {
       ) => [
         ...globalValidators,
         UserRoles.UserRoleClaim.validators.includes('admin'),
+        UserRoles.UserRoleClaim.validators.excludes('responsible'),
       ],
+      checkDatabase: true,
     }),
-    IsNotResponsible,
   )
-  create(
+  async create(
     @Body()
     createCongregationDto: CreateCongregationDto,
     @User() user: IUser,
   ) {
-    return this.congregationsService.create(createCongregationDto, user);
+    try {
+      const congregation = await this.congregationsService.create(
+        createCongregationDto,
+        user,
+      );
+      await UserRoles.addRoleToUser('public', user.sub, 'responsible');
+      this.logger.log({
+        message: 'Congregation created',
+        congregation: congregation,
+      });
+      return congregation;
+    } catch (error) {
+      this.logger.error(error);
+      throw new HttpException(
+        { message: 'Could not create new congregation' },
+        500,
+      );
+    }
   }
 
   @Get()
@@ -54,11 +75,35 @@ export class CongregationsController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
+  @UseGuards(
+    new AuthGuard({
+      overrideGlobalClaimValidators: async (
+        globalValidators: SessionClaimValidator[],
+      ) => [
+        ...globalValidators,
+        UserRoles.UserRoleClaim.validators.includes('responsible'),
+      ],
+      checkDatabase: true,
+    }),
+  )
+  async update(
+    @Param('id') id: UUID,
     @Body() updateCongregationDto: UpdateCongregationDto,
   ) {
-    return this.congregationsService.update(+id, updateCongregationDto);
+    try {
+      const updatedCongregation = await this.congregationsService.update(
+        id,
+        updateCongregationDto,
+      );
+      this.logger.log(JSON.stringify(updatedCongregation));
+      return updatedCongregation;
+    } catch (error) {
+      this.logger.error(error);
+      throw new HttpException(
+        { message: 'Could not update congregation' },
+        500,
+      );
+    }
   }
 
   @Delete(':id')

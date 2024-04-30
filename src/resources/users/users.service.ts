@@ -8,6 +8,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { User } from './entities/user.entity';
 import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
+import { UUID } from 'crypto';
 
 @Injectable()
 export class UsersService {
@@ -23,14 +24,14 @@ export class UsersService {
       const user = this.userRepository.create(createUserDto);
       this.em.persist(user);
       this.em.flush();
-      this.logger.log('User created', JSON.stringify(user));
+      this.logger.log({
+        message: 'User created',
+        user: user,
+      });
       return user;
     } catch (error) {
       this.logger.error(error);
-      throw new InternalServerErrorException({
-        error,
-        code: 500,
-      });
+      return error;
     }
   }
 
@@ -48,5 +49,17 @@ export class UsersService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  async findUserCongregations(sub: string) {
+    try {
+      const user = await this.userRepository.findOneOrFail(
+        { sub },
+        {
+          populate: ['congregation'],
+        },
+      );
+      return user;
+    } catch (error) {}
   }
 }
