@@ -8,20 +8,21 @@ import { BookingsModule } from './resources/bookings/bookings.module';
 import { TimeSlotsModule } from './resources/time-slots/time-slots.module';
 import { CongregationsModule } from './resources/congregations/congregations.module';
 import mikroOrmConfig from './../mikro-orm.config';
-import { AuthModule } from './auth/auth.module';
-import { ConfigModule } from '@nestjs/config';
-import supertokensConfig from 'supertokens.config';
+// import { AuthModule } from './auth/auth.module';
+import { AuthzModule } from './authz/authz.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    // ConfigModule.forRoot(),
     MikroOrmModule.forRoot(mikroOrmConfig),
     SpotsModule,
     UsersModule,
     BookingsModule,
     TimeSlotsModule,
     CongregationsModule,
-    AuthModule.forRoot(supertokensConfig),
+    // AuthModule.forRoot(supertokensConfig),
+    AuthzModule,
   ],
   controllers: [AppController],
   providers: [AppService],

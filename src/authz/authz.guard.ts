@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 @Injectable()
-export class KeycloakGuard extends AuthGuard('jwt') {
+export class AuthzGuard extends AuthGuard('jwt') {
   private logger = new Logger('KeycloakGguard');
 
   constructor() {
