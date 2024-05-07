@@ -7,7 +7,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 @Injectable()
 export class AuthzGuard extends AuthGuard('jwt') {
-  private logger = new Logger('KeycloakGguard');
+  private logger = new Logger('auhtzGuard');
 
   constructor() {
     super();

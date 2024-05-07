@@ -8,7 +8,7 @@ export class UserFactory extends Factory<User> {
 
   protected definition(): EntityData<User> {
     return {
-      name: faker.person.fullName(),
+      email: faker.internet.email(),
       sub: faker.string.uuid(),
     };
   }

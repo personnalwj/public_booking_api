@@ -4,9 +4,8 @@ import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 export class AppController {
   //   constructor(private readonly appService: AppService) {}
 
-  @Get('/callback')
+  @Get('/profile')
   getUser(@Req() req: Request): string {
-    console.log('******* request header *********\n', req.headers);
     return 'Hello World user!';
   }
 }
