@@ -17,9 +17,19 @@ export class Congregation extends CustomBaseEntity {
   @Property()
   address: string;
 
-  @OneToOne()
-  responsible!: User;
+  @OneToOne({
+    entity: () => User,
+    nullable: true,
+  })
+  responsible?: User;
 
   @OneToMany({ entity: () => Spot, mappedBy: 'congregation' })
   spots = new Collection<Spot>(this);
+
+  @OneToMany({
+    entity: () => User,
+    mappedBy: 'congregation',
+    orphanRemoval: true,
+  })
+  members = new Collection<User>(this);
 }

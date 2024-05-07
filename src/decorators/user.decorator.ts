@@ -1,9 +1,14 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { IUser } from 'src/helpers/types';
+import { getUser } from 'supertokens-node';
 
 export const User = createParamDecorator(
-  (data: string, ctx: ExecutionContext) => {
+  async (data: unknown, ctx: ExecutionContext): Promise<IUser> => {
     const request = ctx.switchToHttp().getRequest();
-    const user = request.user;
-    return data ? user?.[data] : user;
+    const user = await getUser(request.session.getUserId());
+    return {
+      sub: user.id,
+      email: user.emails[0],
+    };
   },
 );

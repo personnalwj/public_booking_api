@@ -8,7 +8,7 @@ export class SpotFactory extends Factory<Spot> {
 
   protected definition(): EntityData<Spot> {
     return {
-      title: faker.word.noun(),
+      title: faker.location.street(),
       address: faker.location.streetAddress(),
       description: faker.lorem.paragraph(),
     };

@@ -5,10 +5,10 @@ import { Congregation } from 'src/resources/congregations/entities/congregation.
 @Entity()
 export class User extends CustomBaseEntity {
   @Property({ unique: true })
-  email: string;
+  sub: string;
 
   @Property({ unique: true })
-  sub: string;
+  email: string;
 
   @ManyToOne('Congregation')
   congregation!: Congregation;

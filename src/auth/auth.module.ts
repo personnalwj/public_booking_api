@@ -1,4 +1,3 @@
-import { Module } from '@nestjs/common';
 import { SupertokensService } from './supertokens/supertokens.service';
 import { MiddlewareConsumer, NestModule, DynamicModule } from '@nestjs/common';
 import { AuthMiddleware } from './auth.middleware';
