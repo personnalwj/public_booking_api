@@ -11,10 +11,12 @@ import mikroOrmConfig from './../mikro-orm.config';
 // import { AuthModule } from './auth/auth.module';
 import { AuthzModule } from './authz/authz.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     // ConfigModule.forRoot(),
+    AuthzModule,
     MikroOrmModule.forRoot(mikroOrmConfig),
     SpotsModule,
     UsersModule,
@@ -22,7 +24,6 @@ import { CacheModule } from '@nestjs/cache-manager';
     TimeSlotsModule,
     CongregationsModule,
     // AuthModule.forRoot(supertokensConfig),
-    AuthzModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -26,6 +26,11 @@ export class SpotsController {
     return this.spotsService.findAll();
   }
 
+  @Get('congregation/:id')
+  findAllByCongregation(@Param('id') id: UUID) {
+    return this.spotsService.findAllByCongregation(id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: UUID) {
     return this.spotsService.findOne(id);

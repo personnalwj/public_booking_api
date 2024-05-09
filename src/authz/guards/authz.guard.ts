@@ -22,7 +22,7 @@ export class AuthzGuard extends AuthGuard('jwt') {
       this.logger.log(info);
       throw err || new UnauthorizedException();
     }
-    this.logger.log('user is authorized');
+    this.logger.log('user is authorized ');
     return user;
   }
 }

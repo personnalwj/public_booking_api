@@ -27,7 +27,7 @@ export class KindeClient {
     }
   }
 
-  async fetchAccessToken(): Promise<string> {
+  private async fetchAccessToken(): Promise<string> {
     try {
       const body = new URLSearchParams({
         grant_type: 'client_credentials',

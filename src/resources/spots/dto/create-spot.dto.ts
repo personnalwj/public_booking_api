@@ -19,6 +19,5 @@ export class CreateSpotDto {
   congregation: UUID;
 
   @IsNotEmpty()
-  @IsUUID()
   timeSlots: UUID[];
 }

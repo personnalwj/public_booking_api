@@ -13,9 +13,9 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from 'src/decorators/user.decorator';
 import { IUser } from 'src/helpers/types';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthzGuard } from 'src/authz/guards/authz.guard';
+import { User } from 'src/authz/decorators/user.decorators';
 
 @Controller('users')
 export class UsersController {
@@ -33,7 +33,7 @@ export class UsersController {
   }
 
   @Get('/congregations')
-  @UseGuards(new AuthGuard())
+  @UseGuards(AuthzGuard)
   async findUserCongregation(@User() user: IUser) {
     try {
       const userWithCongration = await this.usersService.findUserCongregations(

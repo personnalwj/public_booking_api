@@ -14,12 +14,12 @@ import { CongregationsService } from './congregations.service';
 import { CreateCongregationDto } from './dto/create-congregation.dto';
 import { UpdateCongregationDto } from './dto/update-congregation.dto';
 import { UUID } from 'crypto';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { SessionClaimValidator } from 'supertokens-node/recipe/session';
-import UserRoles from 'supertokens-node/recipe/userroles';
-import { User } from 'src/decorators/user.decorator';
+
 import { IUser } from 'src/helpers/types';
-import { th } from '@faker-js/faker';
+import { PermissionsGuard } from 'src/authz/guards/permisions.guard';
+import { Permissions } from 'src/authz/decorators/permissions.decorators';
+import { AuthzGuard } from 'src/authz/guards/authz.guard';
+import { User } from 'src/authz/decorators/user.decorators';
 
 @Controller('congregations')
 export class CongregationsController {
@@ -27,18 +27,8 @@ export class CongregationsController {
   private readonly logger = new Logger(CongregationsController.name);
 
   @Post()
-  @UseGuards(
-    new AuthGuard({
-      overrideGlobalClaimValidators: async (
-        globalValidators: SessionClaimValidator[],
-      ) => [
-        ...globalValidators,
-        UserRoles.UserRoleClaim.validators.includes('admin'),
-        UserRoles.UserRoleClaim.validators.excludes('responsible'),
-      ],
-      checkDatabase: true,
-    }),
-  )
+  @Permissions(['congregation:create'])
+  @UseGuards(AuthzGuard, PermissionsGuard)
   async create(
     @Body()
     createCongregationDto: CreateCongregationDto,
@@ -49,7 +39,6 @@ export class CongregationsController {
         createCongregationDto,
         user,
       );
-      await UserRoles.addRoleToUser('public', user.sub, 'responsible');
       this.logger.log({
         message: 'Congregation created',
         congregation: congregation,
@@ -75,17 +64,6 @@ export class CongregationsController {
   }
 
   @Patch(':id')
-  @UseGuards(
-    new AuthGuard({
-      overrideGlobalClaimValidators: async (
-        globalValidators: SessionClaimValidator[],
-      ) => [
-        ...globalValidators,
-        UserRoles.UserRoleClaim.validators.includes('responsible'),
-      ],
-      checkDatabase: true,
-    }),
-  )
   async update(
     @Param('id') id: UUID,
     @Body() updateCongregationDto: UpdateCongregationDto,

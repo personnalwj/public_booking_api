@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateSpotDto } from './dto/create-spot.dto';
 import { UpdateSpotDto } from './dto/update-spot.dto';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Spot } from './entities/spot.entity';
 import { UUID } from 'crypto';
@@ -17,10 +17,14 @@ export class SpotsService {
   constructor(
     @InjectRepository(Spot)
     private readonly spotRepository: EntityRepository<Spot>,
+    private readonly em: EntityManager,
   ) {}
   create(createSpotDto: CreateSpotDto) {
     try {
-      this.spotRepository.create(createSpotDto);
+      const spot = this.spotRepository.create(createSpotDto);
+      this.em.persist(spot);
+      this.em.flush();
+      return spot;
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException({
@@ -33,6 +37,13 @@ export class SpotsService {
 
   findAll() {
     return this.spotRepository.findAll({
+      populate: ['timeSlots'],
+    });
+  }
+
+  findAllByCongregation(id: UUID) {
+    return this.spotRepository.findAll({
+      where: { congregation: id },
       populate: ['timeSlots'],
     });
   }
