@@ -18,7 +18,7 @@ export class Spot extends CustomBaseEntity {
   @Property()
   address: string;
 
-  @Property({ type: TextType })
+  @Property({ type: TextType, nullable: true })
   description: string;
 
   @ManyToMany({ entity: () => TimeSlot, owner: true })

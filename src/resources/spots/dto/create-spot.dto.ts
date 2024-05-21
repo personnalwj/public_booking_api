@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 import { UUID } from 'crypto';
 
 export class CreateSpotDto {
@@ -10,7 +16,6 @@ export class CreateSpotDto {
   @IsString()
   address: string;
 
-  @IsNotEmpty()
   @IsString()
   description: string;
 
@@ -19,5 +24,8 @@ export class CreateSpotDto {
   congregation: UUID;
 
   @IsNotEmpty()
+  @IsArray()
+  @IsUUID(undefined, { each: true })
+  @ArrayNotEmpty()
   timeSlots: UUID[];
 }

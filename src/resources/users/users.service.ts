@@ -1,14 +1,9 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { User } from './entities/user.entity';
 import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
-import { UUID } from 'crypto';
 
 @Injectable()
 export class UsersService {
@@ -19,9 +14,18 @@ export class UsersService {
     private readonly em: EntityManager,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
+  async create(
+    createUserDto: CreateUserDto,
+    adminSub: string,
+    kindeUserId: string,
+  ) {
     try {
-      const user = this.userRepository.create(createUserDto);
+      const admin = await this.findUserCongregations(adminSub);
+      const user = await this.userRepository.create({
+        ...createUserDto,
+        congregation: admin.congregation,
+        sub: kindeUserId,
+      });
       this.em.persist(user);
       this.em.flush();
       this.logger.log({

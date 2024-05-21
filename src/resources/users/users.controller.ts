@@ -16,15 +16,36 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { IUser } from 'src/helpers/types';
 import { AuthzGuard } from 'src/authz/guards/authz.guard';
 import { User } from 'src/authz/decorators/user.decorators';
+import { Roles } from 'src/authz/decorators/roles.decorators';
+import KindeService from 'src/services/kinde/kinde.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private kindeService: KindeService,
+  ) {}
   private readonly logger = new Logger();
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @UseGuards(AuthzGuard)
+  @Roles(['admin'])
+  async create(@Body() createUserDto: CreateUserDto, @User() admin: IUser) {
+    try {
+      const kindeUser = await this.kindeService.createUser(createUserDto);
+      const userCreated = await this.usersService.create(
+        createUserDto,
+        admin.sub,
+        kindeUser.id,
+      );
+      this.logger.log(
+        JSON.stringify(userCreated),
+        `${UsersController.name}: /users`,
+      );
+      return userCreated;
+    } catch (error) {
+      throw new HttpException({ message: 'Could not create user' }, 500);
+    }
   }
 
   @Get()

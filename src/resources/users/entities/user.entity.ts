@@ -10,6 +10,12 @@ export class User extends CustomBaseEntity {
   @Property({ unique: true })
   email: string;
 
+  @Property()
+  given_name: string;
+
+  @Property()
+  family_name: string;
+
   @ManyToOne('Congregation')
   congregation!: Congregation;
 }

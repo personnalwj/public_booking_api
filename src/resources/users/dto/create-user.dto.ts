@@ -1,5 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, IsUUID } from 'class-validator';
-import { UUID } from 'crypto';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -8,9 +7,9 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  sub: UUID;
+  given_name: string;
 
-  @IsUUID()
+  @IsString()
   @IsNotEmpty()
-  congregation: UUID;
+  family_name: string;
 }

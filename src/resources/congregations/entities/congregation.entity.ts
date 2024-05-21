@@ -4,6 +4,7 @@ import {
   OneToMany,
   OneToOne,
   Property,
+  TextType,
 } from '@mikro-orm/core';
 import { CustomBaseEntity } from 'src/helpers/base.entity';
 import { Spot } from 'src/resources/spots/entities/spot.entity';
@@ -22,6 +23,9 @@ export class Congregation extends CustomBaseEntity {
     nullable: true,
   })
   responsible?: User;
+
+  @Property({ nullable: true, type: TextType })
+  description: string;
 
   @OneToMany({ entity: () => Spot, mappedBy: 'congregation' })
   spots = new Collection<Spot>(this);
