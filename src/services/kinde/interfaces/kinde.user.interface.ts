@@ -26,6 +26,17 @@ export interface KindeUserCreate {
   email: string;
 }
 
+export interface KindeUserSubscription {
+  first_name: string;
+  last_name: string;
+  email: string;
+}
+
+export interface KindeUserSubscriptionResponse {
+  subscriber: {
+    subscriber_id: string;
+  };
+}
 export interface CreateKindeUserResponse {
   id: string;
   created: true;

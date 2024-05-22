@@ -18,6 +18,7 @@ import { AuthzGuard } from 'src/authz/guards/authz.guard';
 import { User } from 'src/authz/decorators/user.decorators';
 import { Roles } from 'src/authz/decorators/roles.decorators';
 import KindeService from 'src/services/kinde/kinde.service';
+import { KindeUserSubscription } from 'src/services/kinde/interfaces/kinde.user.interface';
 
 @Controller('users')
 export class UsersController {
@@ -45,6 +46,27 @@ export class UsersController {
       return userCreated;
     } catch (error) {
       throw new HttpException({ message: 'Could not create user' }, 500);
+    }
+  }
+
+  @Post('/request_access')
+  async requestAccess(@Body() userSubscriber: KindeUserSubscription) {
+    try {
+      const subscriber = await this.kindeService.subscribeUser(userSubscriber);
+      this.logger.log(
+        JSON.stringify(subscriber),
+        `${UsersController.name}: /users/request_access`,
+      );
+      return subscriber;
+    } catch (error) {
+      this.logger.error(
+        JSON.stringify(error),
+        `${UsersController.name}: /users/request_access`,
+      );
+      throw new HttpException(
+        { message: error.message, code: error.code },
+        error.status,
+      );
     }
   }
 

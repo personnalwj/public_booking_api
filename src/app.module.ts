@@ -11,6 +11,7 @@ import mikroOrmConfig from './../mikro-orm.config';
 import { AuthzModule } from './authz/authz.module';
 import { KindeModule } from './services/kinde/kinde.module';
 import { BodyParserMiddleware } from './middlewares/body-parser.middleware';
+import { WebhooksModule } from './webhooks/webhooks.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { BodyParserMiddleware } from './middlewares/body-parser.middleware';
     TimeSlotsModule,
     CongregationsModule,
     KindeModule,
+    WebhooksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -31,6 +33,7 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(BodyParserMiddleware)
-      .forRoutes('spots', 'users', 'bookings', 'time-slots', 'congregations');
+      .exclude('webhooks/(.*)')
+      .forRoutes('*');
   }
 }

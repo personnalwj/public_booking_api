@@ -4,7 +4,6 @@ import { AuthzGuard } from './authz/guards/authz.guard';
 import { PermissionsGuard } from './authz/guards/permisions.guard';
 import { Permissions } from './authz/decorators/permissions.decorators';
 import KindeService from './services/kinde/kinde.service';
-import MailerSendClient from './services/mailersend/mailersend.client';
 
 @Controller()
 export class AppController {
@@ -22,6 +21,6 @@ export class AppController {
 
   @Get('/')
   async getUser(): Promise<any> {
-    return 'Hello World!';
+    return this.kindeService.getUserData();
   }
 }

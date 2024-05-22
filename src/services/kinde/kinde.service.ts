@@ -4,6 +4,8 @@ import {
   CreateKindeUserResponse,
   KindeUser,
   KindeUserCreate,
+  KindeUserSubscription,
+  KindeUserSubscriptionResponse,
 } from './interfaces/kinde.user.interface';
 
 @Injectable()
@@ -20,7 +22,7 @@ class KindeService {
       return users;
     } catch (error) {
       this.logger.error(`Error fetching user data: ${error}`);
-      throw new Error('Failed to fetch user data');
+      throw new Error(error.message);
     }
   }
 
@@ -29,18 +31,20 @@ class KindeService {
       const user = await this.kindeClient.post<CreateKindeUserResponse>(
         '/user',
         {
-          profile: {
-            given_name: data.given_name,
-            family_name: data.family_name,
-          },
-          identities: [
-            {
-              type: 'email',
-              details: {
-                email: data.email,
-              },
+          data: {
+            profile: {
+              given_name: data.given_name,
+              family_name: data.family_name,
             },
-          ],
+            identities: [
+              {
+                type: 'email',
+                details: {
+                  email: data.email,
+                },
+              },
+            ],
+          },
         },
       );
       return user;
@@ -49,14 +53,25 @@ class KindeService {
     }
   }
 
-  async verfyWebhookSignature(token: string): Promise<boolean> {
+  async subscribeUser(
+    userSubscriber: KindeUserSubscription,
+  ): Promise<KindeUserSubscriptionResponse> {
     try {
-      const signature = await this.kindeClient.get<string>(
-        `/webhook/verify?token=${token}`,
-      );
-      return signature === 'verified';
-    } catch (error) {
-      throw new Error(error.message);
+      const response =
+        await this.kindeClient.post<KindeUserSubscriptionResponse>(
+          `/subscribers`,
+          {
+            params: {
+              last_name: userSubscriber.last_name,
+              first_name: userSubscriber.first_name,
+              email: userSubscriber.email,
+            },
+          },
+        );
+      return response;
+    } catch (errors) {
+      this.logger.error(`[kinde_service_subscribe]: ${JSON.stringify(errors)}`);
+      throw errors;
     }
   }
 }

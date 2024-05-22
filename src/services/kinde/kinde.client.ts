@@ -2,12 +2,16 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { Cache } from 'cache-manager';
+import { RequestAxiosConfig } from 'node-mailjet/declarations/request/Request';
+import { KindeErrors } from './interfaces/kinde.error.interface';
+import { kindeErrorFormatter } from 'src/helpers/error.formatters';
 
 Injectable();
 export class KindeClient {
   private clientId = process.env.KINDE_CLIENT_ID;
   private clientSecret = process.env.KINDE_CLIENT_SECRET;
-  private logger = new Logger('kindelClient');
+
+  private logger = new Logger('kindeClient');
   private axiosKinde = axios.create({
     baseURL: `${process.env.KINDE_DOMAIN}/api/v1`,
   });
@@ -29,11 +33,34 @@ export class KindeClient {
         );
         return response;
       },
-      (error) => {
-        this.logger.error(
-          `Error fetching data from Kinde: ${JSON.stringify(error)}`,
+      (error: {
+        response: {
+          data: KindeErrors;
+          status: number;
+        };
+        request: {
+          data: KindeErrors;
+        };
+        message: string;
+      }) => {
+        if (error.response) {
+          this.logger.error(
+            `[kinde_axios_response_error]: ${JSON.stringify({
+              data: error.response.data,
+              status: error.response.status,
+            })}`,
+          );
+        } else if (error.request) {
+          // console.log('error.request', error.request);
+          this.logger.error(
+            `[kinde_axios_request_error]: ${JSON.stringify(error.request)}`,
+          );
+        } else {
+          this.logger.error(`[kinde_axios_error]: ${error.message}`);
+        }
+        return Promise.reject(
+          kindeErrorFormatter(error.response.data, error.response.status),
         );
-        throw new Error(error);
       },
     );
   }
@@ -60,7 +87,7 @@ export class KindeClient {
         grant_type: 'client_credentials',
         client_id: this.clientId,
         client_secret: this.clientSecret,
-        audience: 'https://khorganizer-development.eu.kinde.com/api',
+        audience: `${process.env.KINDE_DOMAIN}/api`,
       });
       const response = await axios.post(
         `${process.env.KINDE_DOMAIN}/oauth2/token`,
@@ -83,13 +110,14 @@ export class KindeClient {
     }
   }
 
-  async get<T>(url: string): Promise<T> {
+  async get<T>(url: string, config?: Partial<RequestAxiosConfig>): Promise<T> {
     try {
       const accessToken = await this.getAccessToken();
       const response = await this.axiosKinde.get(url, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
+        ...config,
       });
       return response.data;
     } catch (error) {
@@ -97,27 +125,33 @@ export class KindeClient {
     }
   }
 
-  async post<T>(url: string, data: unknown): Promise<T> {
+  async post<T>(url: string, config?: Partial<RequestAxiosConfig>): Promise<T> {
     try {
       const accessToken = await this.getAccessToken();
+      const { data, ...axiosConfig } = config;
       const response = await this.axiosKinde.post(url, data, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
+        ...axiosConfig,
       });
+      this.logger.log(`[kinde_client_post]: ${JSON.stringify(response.data)}`);
       return response.data;
     } catch (error) {
+      this.logger.error(`[kinde_client_post]: ${JSON.stringify(error)}`);
       throw error;
     }
   }
 
-  async put<T>(url: string, data: unknown): Promise<T> {
+  async put<T>(url: string, config?: Partial<RequestAxiosConfig>): Promise<T> {
     try {
       const accessToken = await this.getAccessToken();
+      const { data, ...axiosConfig } = config;
       const response = await this.axiosKinde.put(url, data, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
+        ...axiosConfig,
       });
       return response.data;
     } catch (error) {

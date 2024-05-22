@@ -11,10 +11,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 5,
-        jwksUri: `https://khorganizer-development.eu.kinde.com/.well-known/jwks`,
+        jwksUri: `${process.env.KINDE_DOMAIN}/.well-known/jwks`,
       }),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      issuer: `https://khorganizer-development.eu.kinde.com`,
+      issuer: process.env.KINDE_DOMAIN,
       algorithms: ['RS256'],
     });
   }
