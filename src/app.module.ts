@@ -11,20 +11,26 @@ import mikroOrmConfig from './../mikro-orm.config';
 import { AuthzModule } from './authz/authz.module';
 import { KindeModule } from './services/kinde/kinde.module';
 import { BodyParserMiddleware } from './middlewares/body-parser.middleware';
-import { WebhooksModule } from './webhooks/webhooks.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { EventServiceModule } from './services/event/event.module';
 
 @Module({
   imports: [
-    // ConfigModule.forRoot(),
-    AuthzModule,
-    MikroOrmModule.forRoot(mikroOrmConfig),
+    // resources
     SpotsModule,
     UsersModule,
     BookingsModule,
     TimeSlotsModule,
     CongregationsModule,
+
+    //services
     KindeModule,
-    WebhooksModule,
+    EventServiceModule,
+
+    // tools
+    AuthzModule,
+    MikroOrmModule.forRoot(mikroOrmConfig),
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

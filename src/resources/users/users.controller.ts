@@ -9,6 +9,7 @@ import {
   UseGuards,
   HttpException,
   Logger,
+  HttpCode,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -18,13 +19,15 @@ import { AuthzGuard } from 'src/authz/guards/authz.guard';
 import { User } from 'src/authz/decorators/user.decorators';
 import { Roles } from 'src/authz/decorators/roles.decorators';
 import KindeService from 'src/services/kinde/kinde.service';
-import { KindeUserSubscription } from 'src/services/kinde/interfaces/kinde.user.interface';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { SubscibeUserDto } from './dto/subscribe-user.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private kindeService: KindeService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
   private readonly logger = new Logger();
 
@@ -50,14 +53,17 @@ export class UsersController {
   }
 
   @Post('/request_access')
-  async requestAccess(@Body() userSubscriber: KindeUserSubscription) {
+  @HttpCode(201)
+  async requestAccess(@Body() userSubscriber: SubscibeUserDto) {
     try {
-      const subscriber = await this.kindeService.subscribeUser(userSubscriber);
+      this.eventEmitter.emit('user:subscribe', userSubscriber);
       this.logger.log(
-        JSON.stringify(subscriber),
+        JSON.stringify(userSubscriber),
         `${UsersController.name}: /users/request_access`,
       );
-      return subscriber;
+      return {
+        message: 'Request for access sent',
+      };
     } catch (error) {
       this.logger.error(
         JSON.stringify(error),

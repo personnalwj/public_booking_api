@@ -59,7 +59,7 @@ class KindeService {
     try {
       const response =
         await this.kindeClient.post<KindeUserSubscriptionResponse>(
-          `/subscribers`,
+          '/subscribers',
           {
             params: {
               last_name: userSubscriber.last_name,
