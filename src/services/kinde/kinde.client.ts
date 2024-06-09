@@ -128,13 +128,25 @@ export class KindeClient {
   async post<T>(url: string, config?: Partial<RequestAxiosConfig>): Promise<T> {
     try {
       const accessToken = await this.getAccessToken();
-      const { data, ...axiosConfig } = config;
-      const response = await this.axiosKinde.post(url, data, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
+      let response;
+      if (config) {
+        const { data, ...axiosConfig } = config;
+        response = await this.axiosKinde.post(url, data, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          ...axiosConfig,
+        });
+      }
+      response = await this.axiosKinde.post(
+        url,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         },
-        ...axiosConfig,
-      });
+      );
       this.logger.log(`[kinde_client_post]: ${JSON.stringify(response.data)}`);
       return response.data;
     } catch (error) {
@@ -148,6 +160,25 @@ export class KindeClient {
       const accessToken = await this.getAccessToken();
       const { data, ...axiosConfig } = config;
       const response = await this.axiosKinde.put(url, data, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        ...axiosConfig,
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async patch<T>(
+    url: string,
+    config?: Partial<RequestAxiosConfig>,
+  ): Promise<T> {
+    try {
+      const accessToken = await this.getAccessToken();
+      const { data, ...axiosConfig } = config;
+      const response = await this.axiosKinde.patch(url, data, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

@@ -12,10 +12,14 @@ import { AuthzModule } from './authz/authz.module';
 import { KindeModule } from './services/kinde/kinde.module';
 import { BodyParserMiddleware } from './middlewares/body-parser.middleware';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { EventServiceModule } from './services/event/event.module';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
+
+    //services
+    KindeModule,
+
     // resources
     SpotsModule,
     UsersModule,
@@ -23,23 +27,11 @@ import { EventServiceModule } from './services/event/event.module';
     TimeSlotsModule,
     CongregationsModule,
 
-    //services
-    KindeModule,
-    EventServiceModule,
-
     // tools
     AuthzModule,
     MikroOrmModule.forRoot(mikroOrmConfig),
-    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(BodyParserMiddleware)
-      .exclude('webhooks/(.*)')
-      .forRoutes('*');
-  }
-}
+export class AppModule {}

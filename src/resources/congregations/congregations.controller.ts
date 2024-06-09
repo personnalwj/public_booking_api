@@ -16,19 +16,25 @@ import { UpdateCongregationDto } from './dto/update-congregation.dto';
 import { UUID } from 'crypto';
 
 import { IUser } from 'src/helpers/types';
-import { PermissionsGuard } from 'src/authz/guards/permisions.guard';
-import { Permissions } from 'src/authz/decorators/permissions.decorators';
+
 import { AuthzGuard } from 'src/authz/guards/authz.guard';
 import { User } from 'src/authz/decorators/user.decorators';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Roles } from 'src/authz/decorators/roles.decorators';
+import { RolesGuard } from 'src/authz/guards/roles.guard';
 
 @Controller('congregations')
 export class CongregationsController {
-  constructor(private readonly congregationsService: CongregationsService) {}
+  constructor(
+    private readonly congregationsService: CongregationsService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
   private readonly logger = new Logger(CongregationsController.name);
 
+  // use the API to verify in real-time if the user has the necessary permissions to access the resource
   @Post()
-  @Permissions(['congregation:create'])
-  @UseGuards(AuthzGuard, PermissionsGuard)
+  @Roles(['admin'])
+  @UseGuards(AuthzGuard, RolesGuard)
   async create(
     @Body()
     createCongregationDto: CreateCongregationDto,
@@ -43,6 +49,7 @@ export class CongregationsController {
         message: 'Congregation created',
         congregation: congregation,
       });
+      this.eventEmitter.emit('congregation:created', user);
       return congregation;
     } catch (error) {
       this.logger.error(error);

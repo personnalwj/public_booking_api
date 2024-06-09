@@ -18,7 +18,7 @@ export class UsersService {
     createUserDto: CreateUserDto,
     adminSub: string,
     kindeUserId: string,
-  ) {
+  ): Promise<User> {
     try {
       const admin = await this.findUserCongregations(adminSub);
       const user = await this.userRepository.create({

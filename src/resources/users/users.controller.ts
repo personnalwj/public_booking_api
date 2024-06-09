@@ -16,17 +16,18 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IUser } from 'src/helpers/types';
 import { AuthzGuard } from 'src/authz/guards/authz.guard';
-import { User } from 'src/authz/decorators/user.decorators';
+import { User as UserDecorator } from 'src/authz/decorators/user.decorators';
 import { Roles } from 'src/authz/decorators/roles.decorators';
 import KindeService from 'src/services/kinde/kinde.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SubscibeUserDto } from './dto/subscribe-user.dto';
+import { User } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private kindeService: KindeService,
+    private readonly kindeService: KindeService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
   private readonly logger = new Logger();
@@ -34,7 +35,10 @@ export class UsersController {
   @Post()
   @UseGuards(AuthzGuard)
   @Roles(['admin'])
-  async create(@Body() createUserDto: CreateUserDto, @User() admin: IUser) {
+  async create(
+    @Body() createUserDto: CreateUserDto,
+    @UserDecorator() admin: IUser,
+  ): Promise<User> {
     try {
       const kindeUser = await this.kindeService.createUser(createUserDto);
       const userCreated = await this.usersService.create(
@@ -46,6 +50,7 @@ export class UsersController {
         JSON.stringify(userCreated),
         `${UsersController.name}: /users`,
       );
+      this.eventEmitter.emit('user:created', { user: userCreated, admin });
       return userCreated;
     } catch (error) {
       throw new HttpException({ message: 'Could not create user' }, 500);
@@ -56,7 +61,7 @@ export class UsersController {
   @HttpCode(201)
   async requestAccess(@Body() userSubscriber: SubscibeUserDto) {
     try {
-      this.eventEmitter.emit('user:subscribe', userSubscriber);
+      this.eventEmitter.emit('user:access_request', userSubscriber);
       this.logger.log(
         JSON.stringify(userSubscriber),
         `${UsersController.name}: /users/request_access`,
@@ -83,7 +88,7 @@ export class UsersController {
 
   @Get('/congregations')
   @UseGuards(AuthzGuard)
-  async findUserCongregation(@User() user: IUser) {
+  async findUserCongregation(@UserDecorator() user: IUser) {
     try {
       const userWithCongration = await this.usersService.findUserCongregations(
         user.sub,

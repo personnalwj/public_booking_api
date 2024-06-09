@@ -33,6 +33,8 @@ export class CongregationsService {
         congregation: congregation,
         sub: user.sub,
         email: user.email,
+        family_name: createCongregationDto.responsible_family_name,
+        given_name: createCongregationDto.responsible_given_name,
       });
       congregation.responsible = createdUser;
       this.em.persist(congregation);

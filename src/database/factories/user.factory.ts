@@ -10,6 +10,8 @@ export class UserFactory extends Factory<User> {
     return {
       sub: faker.string.uuid(),
       email: faker.internet.email(),
+      family_name: faker.person.lastName(),
+      given_name: faker.person.firstName(),
     };
   }
 }

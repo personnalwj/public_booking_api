@@ -7,6 +7,8 @@ import {
   KindeUserSubscription,
   KindeUserSubscriptionResponse,
 } from './interfaces/kinde.user.interface';
+import { IUser } from 'src/helpers/types';
+import { IKindePermission } from './interfaces/kinde.permission.interface';
 
 @Injectable()
 class KindeService {
@@ -72,6 +74,78 @@ class KindeService {
     } catch (errors) {
       this.logger.error(`[kinde_service_subscribe]: ${JSON.stringify(errors)}`);
       throw errors;
+    }
+  }
+
+  /**
+   *
+   * @deprecated
+   * @param user
+   * @param permissions
+   * @returns void
+   * @description Updates the user permissions in Kinde but not used for the moment
+   */
+  async updateUserPermissions(
+    user: IUser,
+    permissions: IKindePermission[],
+  ): Promise<void> {
+    try {
+      await this.kindeClient.post<void>(
+        `/organizations/${process.env.ORGANIZATION_ID}/users`,
+        {
+          data: {
+            users: [
+              {
+                id: user.sub,
+                operation: 'update',
+                permissions,
+              },
+            ],
+          },
+        },
+      );
+    } catch (error) {
+      this.logger.error(
+        `[kinde_service_permissions]: ${JSON.stringify(error)}`,
+      );
+      throw error;
+    }
+  }
+
+  async updateUsersRoles(
+    user: IUser,
+    roles: 'admin' | 'responsible'[],
+  ): Promise<void> {
+    try {
+      await this.kindeClient.patch<void>(
+        `/organizations/${process.env.KINDE_ORGANIZATION_ID}/users`,
+        {
+          data: {
+            users: [
+              {
+                id: user.sub,
+                operation: 'update',
+                roles,
+              },
+            ],
+          },
+        },
+      );
+    } catch (error) {
+      this.logger.error(
+        `[kinde_service_update_roles]: ${JSON.stringify(error)}`,
+      );
+      throw error;
+    }
+  }
+  async refreshUserClaims(user: IUser): Promise<void> {
+    try {
+      await this.kindeClient.post<void>(`/users/${user.sub}/refresh_claims`);
+    } catch (error) {
+      this.logger.error(
+        `[kinde_service_refresh_claims]: ${JSON.stringify(error)}`,
+      );
+      throw error;
     }
   }
 }
