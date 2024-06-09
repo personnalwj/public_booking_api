@@ -10,11 +10,12 @@ import { CongregationsModule } from './resources/congregations/congregations.mod
 import mikroOrmConfig from './../mikro-orm.config';
 import { AuthzModule } from './authz/authz.module';
 import { KindeModule } from './services/kinde/kinde.module';
-import { BodyParserMiddleware } from './middlewares/body-parser.middleware';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     EventEmitterModule.forRoot(),
 
     //services
