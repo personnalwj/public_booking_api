@@ -10,6 +10,7 @@ import {
 import { SpotsService } from './spots.service';
 import { CreateSpotDto } from './dto/create-spot.dto';
 import { UpdateSpotDto } from './dto/update-spot.dto';
+import { UUID } from 'crypto';
 
 @Controller('spots')
 export class SpotsController {
@@ -25,9 +26,14 @@ export class SpotsController {
     return this.spotsService.findAll();
   }
 
+  @Get('congregation/:id')
+  findAllByCongregation(@Param('id') id: UUID) {
+    return this.spotsService.findAllByCongregation(id);
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.spotsService.findOne(+id);
+  findOne(@Param('id') id: UUID) {
+    return this.spotsService.findOne(id);
   }
 
   @Patch(':id')

@@ -4,11 +4,17 @@ import { Congregation } from 'src/resources/congregations/entities/congregation.
 
 @Entity()
 export class User extends CustomBaseEntity {
-  @Property()
-  name: string;
-
   @Property({ unique: true })
   sub: string;
+
+  @Property({ unique: true })
+  email: string;
+
+  @Property()
+  given_name: string;
+
+  @Property()
+  family_name: string;
 
   @ManyToOne('Congregation')
   congregation!: Congregation;

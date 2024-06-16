@@ -1,11 +1,14 @@
 FROM node:18-alpine as development
+ARG NODE_ENV
+
 # add the missing shared libraries from alpine base image
 RUN apk add --no-cache libc6-compat
+
 # Create app folder
 WORKDIR /home/node/app
 
-# Set to dev environment
-ENV NODE_ENV dev
+# Set to development environment
+ENV NODE_ENV=${NODE_ENV}
 
 # Create non-root user for Docker
 RUN deluser --remove-home node \
@@ -14,6 +17,10 @@ RUN deluser --remove-home node \
 
 # Copy source code into app folder
 COPY --chown=node:node . .
+
+RUN chmod +x entrypoint.sh
+
+USER node
 
 # Install dependencies
 RUN yarn --pure-lockfile
@@ -52,18 +59,21 @@ USER node
 #
 # 🚀 Production Server
 #
-FROM node:18-alpine as prod
+FROM node:18-alpine as production
 
 # WORKDIR /home/node/app
 # RUN apk add --no-cache libc6-compat
 
 # # Set to production environment
-# ENV NODE_ENV production
+ENV NODE_ENV=${NODE_ENV}
 
 COPY --chown=node:node --from=build /home/node/app/dist ./dist
 COPY --chown=node:node --from=build /home/node/app/node_modules ./node_modules
+COPY --chown=node:node --from=build /home/node/app/entrypoint.sh ./entrypoint.sh
+
+RUN chmod +x ./entrypoint.sh
 
 # Set Docker as a non-root user
 USER node
 
-CMD ["node", "dist/src/main"]
+ENTRYPOINT [ "./entrypoint.sh" ]
