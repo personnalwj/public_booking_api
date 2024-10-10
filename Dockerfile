@@ -8,7 +8,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /home/node/app
 
 # Set to development environment
-ENV NODE_ENV=${NODE_ENV}
+ENV NODE_ENV=development
 
 # Create non-root user for Docker
 RUN deluser --remove-home node \
@@ -65,7 +65,7 @@ FROM node:18-alpine as production
 # RUN apk add --no-cache libc6-compat
 
 # # Set to production environment
-ENV NODE_ENV=${NODE_ENV}
+ENV NODE_ENV=production
 
 COPY --chown=node:node --from=build /home/node/app/dist ./dist
 COPY --chown=node:node --from=build /home/node/app/node_modules ./node_modules

@@ -86,7 +86,7 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get('/congregations')
+  @Get('/congregation')
   @UseGuards(AuthzGuard)
   async findUserCongregation(@UserDecorator() user: IUser) {
     try {

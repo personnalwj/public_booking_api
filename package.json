@@ -60,7 +60,7 @@
     "supertokens-node": "^17.0.2"
   },
   "devDependencies": {
-    "@mikro-orm/cli": "^6.1.2",
+    "@mikro-orm/cli": "6.1.12",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
