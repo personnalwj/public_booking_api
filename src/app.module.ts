@@ -12,6 +12,8 @@ import { AuthzModule } from './authz/authz.module';
 import { KindeModule } from './services/kinde/kinde.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import supertokensConfig from 'supertokens.config';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { ConfigModule } from '@nestjs/config';
 
     // tools
     AuthzModule,
+    // AuthModule.forRoot(supertokensConfig),
+
     MikroOrmModule.forRoot(mikroOrmConfig),
   ],
   controllers: [AppController],

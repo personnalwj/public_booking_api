@@ -40,6 +40,9 @@ export class UsersController {
     @UserDecorator() admin: IUser,
   ): Promise<User> {
     try {
+      /**
+       * @todo replace with the auth service base on supertokens
+       */
       const kindeUser = await this.kindeService.createUser(createUserDto);
       const userCreated = await this.usersService.create(
         createUserDto,
