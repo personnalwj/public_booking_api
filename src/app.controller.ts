@@ -1,9 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
-import { AuthzGuard } from './authz/guards/authz.guard';
-import { PermissionsGuard } from './authz/guards/permisions.guard';
-import { Permissions } from './authz/decorators/permissions.decorators';
-import KindeService from './services/kinde/kinde.service';
+import KindeService from './services/auth/kinde.service';
 
 @Controller()
 export class AppController {
@@ -13,8 +10,6 @@ export class AppController {
   ) {}
 
   @Get('/home')
-  @Permissions(['congregation:read'])
-  @UseGuards(AuthzGuard, PermissionsGuard)
   async getHello(): Promise<string> {
     return 'hello home!';
   }

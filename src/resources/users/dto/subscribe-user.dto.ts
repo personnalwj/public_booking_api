@@ -11,7 +11,7 @@ export class SubscibeUserDto {
 
   @IsString()
   @IsNotEmpty()
-  last_name: string;
+  family_name: string;
 
   @IsString()
   @IsNotEmpty()

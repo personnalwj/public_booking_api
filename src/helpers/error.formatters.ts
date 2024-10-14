@@ -1,4 +1,4 @@
-import { KindeErrors } from 'src/services/kinde/interfaces/kinde.error.interface';
+import { KindeErrors } from 'src/services/auth/interfaces/kinde.error.interface';
 
 export function kindeErrorFormatter(
   error: KindeErrors,

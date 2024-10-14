@@ -3,7 +3,7 @@ export interface KindeWebhookAccessRequestEvent {
     access_request: {
       email: string;
       first_name: string;
-      last_name: string;
+      family_name: string;
       user_id: string;
     };
   };

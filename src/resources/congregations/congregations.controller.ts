@@ -16,12 +16,13 @@ import { UpdateCongregationDto } from './dto/update-congregation.dto';
 import { UUID } from 'crypto';
 
 import { IUser } from 'src/helpers/types';
-
-import { AuthzGuard } from 'src/authz/guards/authz.guard';
-import { User } from 'src/authz/decorators/user.decorators';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { Roles } from 'src/authz/decorators/roles.decorators';
-import { RolesGuard } from 'src/authz/guards/roles.guard';
+
+import { AuthGuard } from 'src/guards/auth.guard';
+import UserRoles from 'supertokens-node/recipe/userroles';
+
+import { SessionClaimValidator } from 'supertokens-node/recipe/session';
+import { User } from 'src/decorators/user.decorator';
 
 @Controller('congregations')
 export class CongregationsController {
@@ -33,8 +34,17 @@ export class CongregationsController {
 
   // use the API to verify in real-time if the user has the necessary permissions to access the resource
   @Post()
-  @Roles(['admin'])
-  @UseGuards(AuthzGuard, RolesGuard)
+  @UseGuards(
+    new AuthGuard({
+      overrideGlobalClaimValidators: async (
+        globalValidators: SessionClaimValidator[],
+      ) => [
+        ...globalValidators,
+        UserRoles.PermissionClaim.validators.includes('congregations:create'),
+      ],
+      checkDatabase: true,
+    }),
+  )
   async create(
     @Body()
     createCongregationDto: CreateCongregationDto,
@@ -49,7 +59,8 @@ export class CongregationsController {
         message: 'Congregation created',
         congregation: congregation,
       });
-      this.eventEmitter.emit('congregation:created', user);
+      // this.eventEmitter.emit('congregation:created', user);
+      // await UserRoles.removePermissionsFromRole('responsible', ['congregations:create']);
       return congregation;
     } catch (error) {
       this.logger.error(error);

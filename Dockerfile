@@ -1,4 +1,4 @@
-FROM node:18-alpine as development
+FROM node:18-alpine AS development
 ARG NODE_ENV
 
 # add the missing shared libraries from alpine base image
@@ -28,7 +28,7 @@ RUN yarn --pure-lockfile
 #
 # 🏡 Production Build
 #
-FROM node:18-alpine as build
+FROM node:18-alpine AS build
 
 WORKDIR /home/node/app
 RUN apk add --no-cache libc6-compat
@@ -53,13 +53,13 @@ RUN yarn build
 # Install only the production dependencies and clean cache to optimize image size.
 RUN yarn --pure-lockfile --production && yarn cache clean
 
-# Set Docker as a non-root user
+# Set Docker AS a non-root user
 USER node
 
 #
 # 🚀 Production Server
 #
-FROM node:18-alpine as production
+FROM node:18-alpine AS production
 
 # WORKDIR /home/node/app
 # RUN apk add --no-cache libc6-compat
@@ -73,7 +73,7 @@ COPY --chown=node:node --from=build /home/node/app/entrypoint.sh ./entrypoint.sh
 
 RUN chmod +x ./entrypoint.sh
 
-# Set Docker as a non-root user
+# Set Docker AS a non-root user
 USER node
 
 ENTRYPOINT [ "./entrypoint.sh" ]

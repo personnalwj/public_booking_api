@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 import supertokens from 'supertokens-node';
-import { SupertokensExceptionFilter } from './auth/auth.filter';
+import { SupertokensExceptionFilter } from './filters/auth.filter';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {

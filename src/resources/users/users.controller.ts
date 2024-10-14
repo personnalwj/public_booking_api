@@ -15,13 +15,16 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IUser } from 'src/helpers/types';
-import { AuthzGuard } from 'src/authz/guards/authz.guard';
-import { User as UserDecorator } from 'src/authz/decorators/user.decorators';
-import { Roles } from 'src/authz/decorators/roles.decorators';
-import KindeService from 'src/services/kinde/kinde.service';
+import { User as UserDecorator } from 'src/decorators/user.decorator';
+import { SessionClaimValidator } from 'supertokens-node/recipe/session';
+import UserRoles from 'supertokens-node/recipe/userroles';
+import KindeService from 'src/services/auth/kinde.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SubscibeUserDto } from './dto/subscribe-user.dto';
 import { User } from './entities/user.entity';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { signUp } from 'supertokens-node/recipe/emailpassword';
+import { faker } from '@faker-js/faker';
 
 @Controller('users')
 export class UsersController {
@@ -33,21 +36,35 @@ export class UsersController {
   private readonly logger = new Logger();
 
   @Post()
-  @UseGuards(AuthzGuard)
-  @Roles(['admin'])
+  @UseGuards(
+    new AuthGuard({
+      overrideGlobalClaimValidators: async (
+        globalValidators: SessionClaimValidator[],
+      ) => [
+        ...globalValidators,
+        UserRoles.UserRoleClaim.validators.includes('responsible'),
+      ],
+      checkDatabase: true,
+    }),
+  )
   async create(
     @Body() createUserDto: CreateUserDto,
     @UserDecorator() admin: IUser,
   ): Promise<User> {
     try {
-      /**
-       * @todo replace with the auth service base on supertokens
-       */
-      const kindeUser = await this.kindeService.createUser(createUserDto);
+      const generatedPassword = faker.internet.password({ length: 12 });
+      const STuser = await signUp("public", createUserDto.email, generatedPassword);
+      
+      if (STuser.status !== 'OK') {
+        throw new HttpException({ message: 'Could not create user' }, 500);
+      }
+
+      UserRoles.addRoleToUser('public', STuser.user.id, 'first_login');
+      // const kindeUser = await this.kindeService.createUser(createUserDto);
       const userCreated = await this.usersService.create(
         createUserDto,
         admin.sub,
-        kindeUser.id,
+        STuser.user.id,
       );
       this.logger.log(
         JSON.stringify(userCreated),
@@ -90,7 +107,7 @@ export class UsersController {
   }
 
   @Get('/congregation')
-  @UseGuards(AuthzGuard)
+  @UseGuards(new AuthGuard())
   async findUserCongregation(@UserDecorator() user: IUser) {
     try {
       const userWithCongration = await this.usersService.findUserCongregations(

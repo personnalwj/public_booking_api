@@ -64,7 +64,7 @@ class KindeService {
           '/subscribers',
           {
             params: {
-              last_name: userSubscriber.last_name,
+              family_name: userSubscriber.family_name,
               first_name: userSubscriber.first_name,
               email: userSubscriber.email,
             },

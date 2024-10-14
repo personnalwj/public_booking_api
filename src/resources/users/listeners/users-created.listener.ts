@@ -16,7 +16,7 @@ export class UsersCreatedListener {
       this.logger.log(`[user:create]: ${JSON.stringify(payload)}`);
       await this.emailClient.welcomeEmail({
         user_email: payload.user.email,
-        user_name: `${payload.user.given_name} ${payload.user.family_name}`,
+        user_name: `hello`,
         congregation_name: payload.user.congregation.name,
         connection_link: `${process.env.FRONTEND_URL}/auth/login?email=${payload.user.email}`,
         responsible_name: payload.admin.email,

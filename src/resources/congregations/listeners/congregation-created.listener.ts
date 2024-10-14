@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { IUser } from 'src/helpers/types';
-import KindeService from 'src/services/kinde/kinde.service';
+import KindeService from 'src/services/auth/kinde.service';
 
 @Injectable()
 export class CongregationCreatedListener {

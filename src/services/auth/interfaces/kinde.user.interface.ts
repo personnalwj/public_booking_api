@@ -3,7 +3,7 @@ export interface KindeUser {
   provided_id: string;
   preferred_email: string;
   username: string;
-  last_name: string;
+  family_name: string;
   first_name: string;
   is_suspended: true;
   picture: string;
@@ -28,7 +28,7 @@ export interface KindeUserCreate {
 
 export interface KindeUserSubscription {
   first_name: string;
-  last_name: string;
+  family_name: string;
   email: string;
 }
 

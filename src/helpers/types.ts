@@ -1,5 +1,5 @@
 export type IUserMetadata = {
-  last_name: string;
+  family_name: string;
   first_name: string;
 };
 

@@ -7,7 +7,7 @@ import UserRoles from 'supertokens-node/recipe/userroles';
 import UserMeradata from 'supertokens-node/recipe/usermetadata';
 import jwt from 'supertokens-node/recipe/jwt';
 
-import { ConfigInjectionToken, AuthModuleConfig } from '../config.interface';
+import { ConfigInjectionToken, AuthModuleConfig } from '../../interfaces/supertokens-config.interface';
 
 @Injectable()
 export class SupertokensService {
@@ -25,6 +25,9 @@ export class SupertokensService {
             apis: (originalImplementation) => {
               return {
                 ...originalImplementation,
+                signIn: async (input) => {
+                  return null;
+                },
                 signUpPOST: undefined,
               };
             },

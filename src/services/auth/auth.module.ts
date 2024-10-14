@@ -1,8 +1,7 @@
-import { SupertokensService } from '../services/auth/auth.service';
+import { SupertokensService } from '../../services/auth/auth.service';
 import { MiddlewareConsumer, NestModule, DynamicModule } from '@nestjs/common';
-import { AuthMiddleware } from '../middlewares/auth.middleware';
-import { ConfigInjectionToken, AuthModuleConfig } from '../interfaces/supertokens-config.interface';
-import { AuthController } from './auth.controller';
+import { AuthMiddleware } from '../../middlewares/auth.middleware';
+import { ConfigInjectionToken, AuthModuleConfig } from '../../interfaces/supertokens-config.interface';
 
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
@@ -29,7 +28,6 @@ export class AuthModule implements NestModule {
       exports: [],
       imports: [],
       module: AuthModule,
-      controllers: [AuthController],
     };
   }
 }

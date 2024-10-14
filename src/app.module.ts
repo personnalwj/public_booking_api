@@ -9,7 +9,7 @@ import { TimeSlotsModule } from './resources/time-slots/time-slots.module';
 import { CongregationsModule } from './resources/congregations/congregations.module';
 import mikroOrmConfig from '../mikro-orm.config';
 import { AuthzModule } from './authz/authz.module';
-import { KindeModule } from './services/kinde/kinde.module';
+import { KindeModule } from './services/auth/kinde.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
@@ -32,7 +32,7 @@ import supertokensConfig from 'supertokens.config';
 
     // tools
     AuthzModule,
-    // AuthModule.forRoot(supertokensConfig),
+    AuthModule.forRoot(supertokensConfig),
 
     MikroOrmModule.forRoot(mikroOrmConfig),
   ],
